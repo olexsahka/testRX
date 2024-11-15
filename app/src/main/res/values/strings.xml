@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">testGitApp</string>
+    <string name="test_rx_app">Test RX APP \"Github Users\"</string>
+</resources>
