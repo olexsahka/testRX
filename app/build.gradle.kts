@@ -3,8 +3,6 @@ import java.util.Properties
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
-    alias(libs.plugins.androidx.navigation.safe.args)
-
 }
 
 android {
@@ -34,7 +32,6 @@ android {
     }
     buildFeatures {
         buildConfig = true
-        viewBinding = true
     }
 
     buildTypes {
@@ -62,8 +59,6 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
-    implementation(libs.androidx.navigation.fragment.ktx)
-    implementation(libs.androidx.navigation.ui.ktx)
     implementation(libs.rxandroid)
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
@@ -81,10 +76,6 @@ dependencies {
 
     implementation (libs.logging.interceptor)
     implementation (libs.okhttp)
-    implementation (libs.github.glide)
-    implementation(libs.androidx.navigation.fragment)
-    implementation(libs.androidx.navigation.fragment.ktx)
-    implementation(libs.androidx.navigation.ui.ktx)
 
 
 
