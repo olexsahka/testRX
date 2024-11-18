@@ -115,12 +115,12 @@ class GithubUserDetailFragment : Fragment() {
             when(resultData) {
 
                 is GithubUserDetailsResult.Loading -> {
-                    binding.progressbar.visibility = View.VISIBLE
+                    startShimmer()
                     binding.userDetailLayout.visibility = View.GONE
                 }
 
                 is GithubUserDetailsResult.Error -> {
-                    binding.progressbar.visibility = View.GONE
+                    stopShimmer()
                     binding.userDetailLayout.visibility = View.GONE
                     resultData.throwable.message?.let{
                         Toast.makeText(requireContext(),it, Toast.LENGTH_LONG).show()
@@ -129,7 +129,7 @@ class GithubUserDetailFragment : Fragment() {
 
                 is GithubUserDetailsResult.Success -> {
                     binding.userDetailLayout.visibility = View.VISIBLE
-                    binding.progressbar.visibility = View.GONE
+                    stopShimmer()
                     configureView(resultData.detail)
                 }
             }
@@ -138,11 +138,9 @@ class GithubUserDetailFragment : Fragment() {
 
     private fun configureView(detailUiModel: DetailUiModel){
         with(binding){
-
             email.text = detailUiModel.login.getOrDefault("Name not Found")
             bio.text = detailUiModel.blog.getOrDefault("Bio not Found")
             location.text = detailUiModel.location.getOrDefault("Location not Found")
-            createdTime.text = detailUiModel.createdAt.getOrDefault("Created time not Found")
             updatedTime.text = detailUiModel.updatedAt.getOrDefault("Updated time not Found")
             subscribers.text = "Subscribers ${detailUiModel.following?: "0"}"
             flowers.text = "Followers ${detailUiModel.followers ?: "0"}"
@@ -158,6 +156,15 @@ class GithubUserDetailFragment : Fragment() {
         }
     }
 
+    private fun startShimmer(){
+        binding.rootShimmer.rootShimmer.visibility = View.VISIBLE
+        binding.rootShimmer.shimmerLayout.startShimmer()
+    }
+
+    private fun stopShimmer(){
+        binding.rootShimmer.rootShimmer.visibility = View.GONE
+        binding.rootShimmer.shimmerLayout.stopShimmer()
+    }
     infix fun String?.getOrDefault(defult: String):String{
         return if (this.isNullOrEmpty()) defult else this
     }

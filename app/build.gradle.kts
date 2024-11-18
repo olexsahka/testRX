@@ -84,8 +84,10 @@ dependencies {
     implementation(libs.androidx.navigation.ui.ktx)
     implementation(libs.androidx.room.runtime)
     annotationProcessor(libs.androidx.room.compiler)
-    kapt(libs.androidx.room.compiler)
     implementation(libs.androidx.room.rxjava3)
+    implementation(libs.facebook.shimmer)
+
+    kapt(libs.androidx.room.compiler)
 
 
 
