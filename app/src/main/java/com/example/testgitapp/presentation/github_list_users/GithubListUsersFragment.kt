@@ -13,7 +13,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.testgitapp.BuildConfig
 import com.example.testgitapp.data.remote.api.GithubApi
-import com.example.testgitapp.data.remote.models.DataMapper
+import com.example.testgitapp.data.remote.models.RemoteDataMapper
 import com.example.testgitapp.data.remote.repository.GithubRepositoryImpl
 import com.example.testgitapp.data.remote.source.GettingUserPagingDataSourceImpl
 import com.example.testgitapp.databinding.GithubListUsersFragmentBinding
@@ -77,7 +77,7 @@ class GithubListUsersFragment: Fragment() {
     }
 
     private val githubRepository by lazy {
-        GithubRepositoryImpl(api, DataMapper.BaseDataMapper())
+        GithubRepositoryImpl(api, RemoteDataMapper.BaseRemoteDataMapper())
     }
 
     private val githubViewModel: GithubUserListViewModel by  viewModels {

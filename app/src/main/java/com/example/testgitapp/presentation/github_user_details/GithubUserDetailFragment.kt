@@ -7,17 +7,20 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.LiveData
 import com.bumptech.glide.Glide
 import com.example.testgitapp.BuildConfig
+import com.example.testgitapp.GithubApplication
 import com.example.testgitapp.R
+import com.example.testgitapp.data.local.mapper.DatabaseMapper
+import com.example.testgitapp.data.local.repository.LRUCacheRepositoryImpl
+import com.example.testgitapp.data.mediator.MediatorImpl
 import com.example.testgitapp.data.remote.api.GithubApi
-import com.example.testgitapp.data.remote.models.DataMapper
+import com.example.testgitapp.data.remote.models.RemoteDataMapper
 import com.example.testgitapp.data.remote.repository.GithubRepositoryImpl
 import com.example.testgitapp.databinding.GithubUserDetailFragmentBinding
+import com.example.testgitapp.domain.repository.LRUCacheRepository
 import com.example.testgitapp.presentation.models.DetailUiModel
 import com.example.testgitapp.presentation.models.GithubUserDetailsResult
-import com.example.testgitapp.presentation.models.GithubUsersResult
 import com.example.testgitapp.presentation.models.UiMapper
 import com.example.testgitapp.presentation.viewmodels.ViewModelFactory
 import com.google.gson.FieldNamingPolicy
@@ -66,11 +69,19 @@ class GithubUserDetailFragment : Fragment() {
     }
 
     private val githubRepository by lazy {
-        GithubRepositoryImpl(api, DataMapper.BaseDataMapper())
+        GithubRepositoryImpl(api, RemoteDataMapper.BaseRemoteDataMapper())
+    }
+
+    private val lruCacheRepository by lazy {
+        LRUCacheRepositoryImpl(databaseMapper = DatabaseMapper.BaseDatabaseMapper(), detailDAo = GithubApplication.database.detailDao())
+    }
+
+    private val mediator by lazy {
+        MediatorImpl(lruCacheRepository = lruCacheRepository, githubRepository = githubRepository)
     }
 
     private val gitHubUserDetailViewModel: GitHubUserDetailViewModel by  viewModels {
-        ViewModelFactory.provideDetailViewModel(githubRepository, UiMapper.BaseUiMapper())
+        ViewModelFactory.provideDetailViewModel(mediator, UiMapper.BaseUiMapper())
     }
 
     override fun onCreateView(
@@ -104,12 +115,12 @@ class GithubUserDetailFragment : Fragment() {
             when(resultData) {
 
                 is GithubUserDetailsResult.Loading -> {
-                    binding.progressbar.visibility = View.VISIBLE
+                    startShimmer()
                     binding.userDetailLayout.visibility = View.GONE
                 }
 
                 is GithubUserDetailsResult.Error -> {
-                    binding.progressbar.visibility = View.GONE
+                    stopShimmer()
                     binding.userDetailLayout.visibility = View.GONE
                     resultData.throwable.message?.let{
                         Toast.makeText(requireContext(),it, Toast.LENGTH_LONG).show()
@@ -118,7 +129,7 @@ class GithubUserDetailFragment : Fragment() {
 
                 is GithubUserDetailsResult.Success -> {
                     binding.userDetailLayout.visibility = View.VISIBLE
-                    binding.progressbar.visibility = View.GONE
+                    stopShimmer()
                     configureView(resultData.detail)
                 }
             }
@@ -127,11 +138,9 @@ class GithubUserDetailFragment : Fragment() {
 
     private fun configureView(detailUiModel: DetailUiModel){
         with(binding){
-
             email.text = detailUiModel.login.getOrDefault("Name not Found")
             bio.text = detailUiModel.blog.getOrDefault("Bio not Found")
             location.text = detailUiModel.location.getOrDefault("Location not Found")
-            createdTime.text = detailUiModel.createdAt.getOrDefault("Created time not Found")
             updatedTime.text = detailUiModel.updatedAt.getOrDefault("Updated time not Found")
             subscribers.text = "Subscribers ${detailUiModel.following?: "0"}"
             flowers.text = "Followers ${detailUiModel.followers ?: "0"}"
@@ -147,6 +156,15 @@ class GithubUserDetailFragment : Fragment() {
         }
     }
 
+    private fun startShimmer(){
+        binding.rootShimmer.rootShimmer.visibility = View.VISIBLE
+        binding.rootShimmer.shimmerLayout.startShimmer()
+    }
+
+    private fun stopShimmer(){
+        binding.rootShimmer.rootShimmer.visibility = View.GONE
+        binding.rootShimmer.shimmerLayout.stopShimmer()
+    }
     infix fun String?.getOrDefault(defult: String):String{
         return if (this.isNullOrEmpty()) defult else this
     }

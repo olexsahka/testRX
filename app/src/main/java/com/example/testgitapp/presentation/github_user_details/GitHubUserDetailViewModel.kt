@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.testgitapp.domain.model.Result
 import com.example.testgitapp.domain.repository.GithubRepository
+import com.example.testgitapp.domain.repository.Mediator
 import com.example.testgitapp.presentation.models.GithubUserDetailsResult
 import com.example.testgitapp.presentation.models.UiMapper
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -13,7 +14,7 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.schedulers.Schedulers
 
 class GitHubUserDetailViewModel(
-    private val repository: GithubRepository,
+    private val mediator: Mediator,
     private val uiMapper: UiMapper
 ): ViewModel() {
     private val disposable = CompositeDisposable()
@@ -25,7 +26,7 @@ class GitHubUserDetailViewModel(
         disposable.clear()
         _usersResult.postValue(GithubUserDetailsResult.Loading)
         disposable.add(
-            repository.getUsersDetail(name)
+            mediator.fetchDetail(name)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ onNext ->

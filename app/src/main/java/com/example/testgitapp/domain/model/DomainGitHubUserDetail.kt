@@ -12,7 +12,7 @@ data class DomainGitHubUserDetail (
     val gistsUrl: String?,
     val id: Int,
     val location: String?,
-    val login: String?,
+    val login: String,
     val name: String?,
     val type: String?,
     val updatedAt: String?,

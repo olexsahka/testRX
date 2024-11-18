@@ -4,7 +4,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.androidx.navigation.safe.args)
-
+    alias(libs.plugins.org.jetbrains.kotlin.kapt)
 }
 
 android {
@@ -73,18 +73,21 @@ dependencies {
     implementation(libs.firebase.crashlytics.buildtools)
     implementation(libs.akarnokd.rxjava3.retrofit.adapter)
     implementation(libs.adapter.rxjava3.v290)
-
-
     implementation (libs.adapter.rxjava3)
     implementation (libs.converter.gson)
     implementation (libs.retrofit)
-
     implementation (libs.logging.interceptor)
     implementation (libs.okhttp)
     implementation (libs.github.glide)
     implementation(libs.androidx.navigation.fragment)
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
+    implementation(libs.androidx.room.runtime)
+    annotationProcessor(libs.androidx.room.compiler)
+    implementation(libs.androidx.room.rxjava3)
+    implementation(libs.facebook.shimmer)
+
+    kapt(libs.androidx.room.compiler)
 
 
 
