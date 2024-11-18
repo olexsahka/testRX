@@ -1,25 +1,66 @@
 package com.example.testgitapp.data.remote.repository
 
-import android.util.Log
-import androidx.paging.Pager
-import androidx.paging.PagingConfig
-import androidx.paging.PagingData
-import androidx.paging.rxjava3.flowable
-import com.example.testgitapp.data.remote.GithubApi
-import com.example.testgitapp.data.remote.GithubSource
+import com.example.testgitapp.data.remote.api.GithubApi
 import com.example.testgitapp.data.remote.models.DataMapper
-import com.example.testgitapp.domain.model.DomainUser
+import com.example.testgitapp.domain.model.Result
+import com.example.testgitapp.data.remote.responces.SearchGithubUserResponse
+import com.example.testgitapp.domain.model.DomainGitHubUserDetail
+import com.example.testgitapp.domain.model.DomainGithubUsers
 import com.example.testgitapp.domain.repository.GithubRepository
-import io.reactivex.rxjava3.core.Flowable
+import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.schedulers.Schedulers
+import retrofit2.Response
 
 class GithubRepositoryImpl(private val api: GithubApi, private val dataMapper: DataMapper) : GithubRepository {
-    override fun getPagingUsers(): Flowable<PagingData<DomainUser>> {
-        return Pager(
-            config = PagingConfig(20, enablePlaceholders = false),
-            pagingSourceFactory = {
-                GithubSource(api, dataMapper)
+    override fun getGithubUserList(page: Int, perPage: Int): Single<Result<DomainGithubUsers>> {
+        return api.getGithubUsers(page, perPage)
+            .subscribeOn(Schedulers.io())
+            .map {
+                it.toResult { data ->
+                        dataMapper.toDomainGithubUsers(SearchGithubUserResponse(false,data,data.size),
+                    )
+                }
             }
-        ).flowable
+            .onErrorReturn { error ->
+                Result.Error(error.message.toString())
+            }
     }
 
+    override fun searchUsersByQuery(
+        query: String,
+        page: Int,
+        perPage: Int
+    ): Single<Result<DomainGithubUsers>> {
+        return api.searchGithubUsers(query, page, perPage)
+            .subscribeOn(Schedulers.io())
+            .map {
+                Result.Success(dataMapper.toDomainGithubUsers(it)) as Result<DomainGithubUsers>
+            }
+            .doOnError {
+                Result.Error(it.message.toString())
+            }
+    }
+
+    override fun getUsersDetail(name: String): Single<Result<DomainGitHubUserDetail>> {
+        return api.getUserDetails(name)
+            .subscribeOn(Schedulers.io())
+            .map { githubUserDetailResponseResponse ->
+                githubUserDetailResponseResponse.toResult {
+                    dataMapper.toDomainUserDetail(it)
+                }
+            }
+            .doOnError {
+                Result.Error(it.message.toString())
+
+            }
+
+    }
+}
+
+inline fun <T, R> Response<T>.toResult(
+    transform: (T) -> R
+): Result<R> {
+    return this.body()?.let { data ->
+        Result.Success(transform(data))
+    } ?: Result.Error("Empty data returned")
 }
