@@ -1,7 +1,13 @@
-package com.example.testgitapp.domain.model
+package com.example.testgitapp.data.local.entity
+
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 
 
-data class DomainGitHubUserDetail (
+@Entity(tableName = "cached_table")
+data class DetailEntity(
+    val id : Int,
+    val lastAccessed: Long,
     val avatarUrl: String?,
     val blog: String?,
     val company: String?,
@@ -10,8 +16,8 @@ data class DomainGitHubUserDetail (
     val followers: Int?,
     val following: Int?,
     val gistsUrl: String?,
-    val id: Int,
     val location: String?,
+    @PrimaryKey
     val login: String,
     val name: String?,
     val type: String?,

@@ -7,17 +7,20 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.LiveData
 import com.bumptech.glide.Glide
 import com.example.testgitapp.BuildConfig
+import com.example.testgitapp.GithubApplication
 import com.example.testgitapp.R
+import com.example.testgitapp.data.local.mapper.DatabaseMapper
+import com.example.testgitapp.data.local.repository.LRUCacheRepositoryImpl
+import com.example.testgitapp.data.mediator.MediatorImpl
 import com.example.testgitapp.data.remote.api.GithubApi
-import com.example.testgitapp.data.remote.models.DataMapper
+import com.example.testgitapp.data.remote.models.RemoteDataMapper
 import com.example.testgitapp.data.remote.repository.GithubRepositoryImpl
 import com.example.testgitapp.databinding.GithubUserDetailFragmentBinding
+import com.example.testgitapp.domain.repository.LRUCacheRepository
 import com.example.testgitapp.presentation.models.DetailUiModel
 import com.example.testgitapp.presentation.models.GithubUserDetailsResult
-import com.example.testgitapp.presentation.models.GithubUsersResult
 import com.example.testgitapp.presentation.models.UiMapper
 import com.example.testgitapp.presentation.viewmodels.ViewModelFactory
 import com.google.gson.FieldNamingPolicy
@@ -66,11 +69,19 @@ class GithubUserDetailFragment : Fragment() {
     }
 
     private val githubRepository by lazy {
-        GithubRepositoryImpl(api, DataMapper.BaseDataMapper())
+        GithubRepositoryImpl(api, RemoteDataMapper.BaseRemoteDataMapper())
+    }
+
+    private val lruCacheRepository by lazy {
+        LRUCacheRepositoryImpl(databaseMapper = DatabaseMapper.BaseDatabaseMapper(), detailDAo = GithubApplication.database.detailDao())
+    }
+
+    private val mediator by lazy {
+        MediatorImpl(lruCacheRepository = lruCacheRepository, githubRepository = githubRepository)
     }
 
     private val gitHubUserDetailViewModel: GitHubUserDetailViewModel by  viewModels {
-        ViewModelFactory.provideDetailViewModel(githubRepository, UiMapper.BaseUiMapper())
+        ViewModelFactory.provideDetailViewModel(mediator, UiMapper.BaseUiMapper())
     }
 
     override fun onCreateView(

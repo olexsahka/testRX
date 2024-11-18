@@ -6,7 +6,7 @@ import com.example.testgitapp.domain.model.DomainGitHubUserDetail
 import com.example.testgitapp.domain.model.DomainGithubUsers
 import com.example.testgitapp.domain.model.DomainUser
 
-interface DataMapper {
+interface RemoteDataMapper {
 
     fun toDomainUser(githubUser: GithubUserModel): DomainUser
 
@@ -14,7 +14,7 @@ interface DataMapper {
 
     fun toDomainUserDetail(githubUserDetailResponse: GithubUserDetailResponse): DomainGitHubUserDetail
 
-    class BaseDataMapper : DataMapper {
+    class BaseRemoteDataMapper : RemoteDataMapper {
 
         override fun toDomainUser(githubUser: GithubUserModel): DomainUser =
             DomainUser(githubUser.id, githubUser.login, githubUser.avatarUrl)
@@ -28,21 +28,21 @@ interface DataMapper {
 
         override fun toDomainUserDetail(githubUserDetailResponse: GithubUserDetailResponse): DomainGitHubUserDetail =
             DomainGitHubUserDetail(
-                githubUserDetailResponse.avatarUrl,
-                githubUserDetailResponse.blog,
-                githubUserDetailResponse.company,
-                githubUserDetailResponse.createdAt,
-                githubUserDetailResponse.eventsUrl,
-                githubUserDetailResponse.followers,
-                githubUserDetailResponse.following,
-                githubUserDetailResponse.gistsUrl,
-                githubUserDetailResponse.id,
-                githubUserDetailResponse.location,
-                githubUserDetailResponse.login,
-                githubUserDetailResponse.name,
-                githubUserDetailResponse.type,
-                githubUserDetailResponse.updatedAt,
-                githubUserDetailResponse.url,
+                avatarUrl = githubUserDetailResponse.avatarUrl,
+                blog = githubUserDetailResponse.blog,
+                company = githubUserDetailResponse.company,
+                createdAt = githubUserDetailResponse.createdAt,
+                eventsUrl = githubUserDetailResponse.eventsUrl,
+                followers = githubUserDetailResponse.followers,
+                following = githubUserDetailResponse.following,
+                gistsUrl = githubUserDetailResponse.gistsUrl,
+                id = githubUserDetailResponse.id,
+                location = githubUserDetailResponse.location,
+                login = githubUserDetailResponse.login,
+                name = githubUserDetailResponse.name,
+                type = githubUserDetailResponse.type,
+                updatedAt = githubUserDetailResponse.updatedAt,
+                url = githubUserDetailResponse.url,
             )
     }
 }
