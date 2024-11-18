@@ -3,7 +3,6 @@ package com.example.testgitapp.domain.repository
 import com.example.testgitapp.domain.model.Result
 import com.example.testgitapp.domain.model.DomainGitHubUserDetail
 import com.example.testgitapp.domain.model.DomainGithubUsers
-import com.example.testgitapp.presentation.adapters.UserViewHolder
 import io.reactivex.rxjava3.core.Single
 
 interface GithubRepository {
