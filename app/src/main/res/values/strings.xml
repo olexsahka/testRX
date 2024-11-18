@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">testGitApp</string>
     <string name="test_rx_app">Test RX APP \"Github Users\"</string>
+    <string name="write_user_name">write user name</string>
 </resources>
