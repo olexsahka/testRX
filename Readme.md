@@ -1,6 +1,3 @@
-Hello!
-
-
 This sample App with Github API.
 
 Stack: RXJava3, Paging, Retrofit, Room by LRU Tech
